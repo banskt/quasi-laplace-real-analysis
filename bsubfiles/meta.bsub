@@ -1,0 +1,59 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi
+#BSUB -W 48:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -R scratch
+#BSUB -n 1
+
+SIMDIR=_SIMDIR_
+STUDYNAMES=_STUDYN_
+SAMPLES=_SAMPLES
+META=__META__
+
+FILTERSNPS=_FILSNP_
+GENINFPY=_GENINF_
+
+SNPTESTDIR="${SIMDIR}/snptest"
+GFILE="${SNPTESTDIR}/genomic_inflation_factor.txt"
+
+source ${HOME}/miniconda3/envs/py36/bin/activate py36
+# filter SNPs which are present in at least 3 studies and follow HWE
+python ${FILTERSNPS} -d ${SNPTESTDIR} -s ${STUDYNAMES}
+
+# Genomic inflation factor
+for STUDY in ${STUDYNAMES}; do
+    PVALSFILE="${SNPTESTDIR}/${STUDY}/pvals.dat"
+    if [ -f ${PVALSFILE} ]; then rm -rf ${PVALSFILE}; fi
+    for CHROM in {1..22}; do
+        INFILE="${SNPTESTDIR}/${STUDY}/chr${CHROM}_qc.out"
+        TMPFILE="${SNPTESTDIR}/${STUDY}/pvals_chr${CHROM}_qc.dat"
+        cat ${INFILE} | grep -v '^#' | cut -d" " -f42 > ${TMPFILE}
+        tail -n +2 ${TMPFILE} >> ${PVALSFILE}
+        rm -rf ${TMPFILE}
+    done
+done
+python ${GENINFPY} -d ${SNPTESTDIR} -s ${STUDYNAMES} -o ${GFILE}
+
+CWD=`pwd`
+
+OUTDIR="${SNPTESTDIR}/meta"
+if [ ! -d ${OUTDIR} ]; then
+    mkdir -p ${OUTDIR}
+fi
+cd ${OUTDIR}
+
+LAMBDAS=`cat ${GFILE} | awk '{print $2}'`
+
+for CHROM in {1..22}; do
+    INFILE="chr${CHROM}_qc.out"
+    OUTFILE="chr${CHROM}_qc_meta_fixed_effect.out"
+    COHORTFILES=""
+    for STUDY in ${STUDYNAMES}; do
+        COHORTFILES+="../${STUDY}/${INFILE} "
+    done
+    ${META} --snptest --method 1 --cohort ${COHORTFILES} --lambda ${LAMBDAS} --output ${OUTFILE}
+done
+
+cd ${CWD}

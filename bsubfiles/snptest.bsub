@@ -1,0 +1,27 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi
+#BSUB -W 48:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -R scratch
+#BSUB -n 1
+
+SIMDIR=_SIMDIR_
+STUDY=_GSTUDY_
+SNPTEST=_SNPTEST
+GENOFILE=_USEGENO
+CHROM=_CHROM__
+
+SAMPLEFILE="${SIMDIR}/samples/${STUDY}/phenotypes.sample"
+OUTDIR="${SIMDIR}/snptest/${STUDY}"
+GENODIR="${LOCIDIR}/${STUDY}"
+
+if [ ! -d ${OUTDIR} ]; then
+    mkdir -p ${OUTDIR}
+fi
+
+OUTFILE="${OUTDIR}/chr${CHROM}.out"
+${SNPTEST} -data ${GENOFILE} ${SAMPLEFILE} -o ${OUTFILE} -frequentist 1 -pheno pheno -method score
+HWEFILE="${OUTDIR}/chr${CHROM}.hwe"
+${SNPTEST} -data ${GENOFILE} ${SAMPLEFILE} -o ${HWEFILE} -hwe -summary_stats_only
