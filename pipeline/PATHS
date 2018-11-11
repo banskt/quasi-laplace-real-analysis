@@ -21,9 +21,6 @@ BASEDIR="/scratch/sbanerj/quasi_laplace_real"
 SCRIPTDIR="${CURDIR}/../scripts"
 MASTER_BSUBDIR="${CURDIR}/../bsubfiles"
 JOBSUBDIR="${CURDIR}/../jobsubs"
-LDBASEDIR="${BASEDIR}/ldmap"
-LDMAPWGHTDIR="${BASEDIR}/ldmap/weighted"
-LDMAPCOMBDIR="${BASEDIR}/ldmap/combined"
 
 # external programs required for the pipeline
 SNPTEST="${HOME}/packages/SNPTEST/snptest_v2.5.4-beta3_linux_x86_64_dynamic/snptest_v2.5.4-beta3"
@@ -31,12 +28,14 @@ META="${HOME}/packages/META/meta"
 LDSTORE="${HOME}/packages/ldstore/ldstore_v1.1_x86_64/ldstore"
 BLORE="${HOME}/fine-mapping-SNPs/codebase/b-lore/bin/blore"
 FINEMAP="${HOME}/packages/FINEMAP/finemap_v1.1_x86_64/finemap"
+QCTOOL="${HOME}/packages/qctool/qctool_v1.4-linux-x86_64/qctool"
 
 # other scripts used in the pipeline
 GENINF="${SCRIPTDIR}/genomic_inflation_factor.py"
 FILTERSNPS="${SCRIPTDIR}/filter_SNPS_hwe_nmeta.py"
 DEFINELOCI="${SCRIPTDIR}/select_snps_from_meta.py"
 CREATELOCI="${SCRIPTDIR}/create_loci.py"
+LDMAP_WEIGHTED="${SCRIPTDIR}/ldmap_weighted.py"
 
 # external files
 KNOWNLOCI="${CURDIR}/../known_loci.txt"

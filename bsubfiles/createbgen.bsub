@@ -1,0 +1,18 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi-short
+#BSUB -W 2:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -R scratch
+#BSUB -n 1
+
+SRCDIR=_GENDIR_
+LOCUSNAMES=_LOC_NM_
+QCTOOL=_QC_TOL_
+
+cd ${SRCDIR}
+while read LOCUSPREFIX; do
+    cat ${LOCUSPREFIX}.gen | awk '{print $1, $2, 0, $3, $4, $5}' > ${LOCUSPREFIX}.map
+    ${QCTOOL} -g ${LOCUSPREFIX}.gen -og ${LOCUSPREFIX}.bgen
+done < ${LOCUSNAMES}

@@ -1,0 +1,28 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi-short
+#BSUB -W 2:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -n 1
+#BSUB -R scratch
+
+SCRIPT=_WGHT_LD
+LOCUSPREFIX=_LOCUSP_
+STUDYNAMES=_STUDYN_
+SAMPLES=_SAMPLES
+METARESDIR=_METDIR_
+LDDIR=_LD_DIR_
+LDBASEDIR=_LDBASE_
+
+OUTDIR="${LDDIR}"
+METAFILE="${METARESDIR}/${LOCUSPREFIX}.selected"
+
+source $HOME/miniconda3/envs/py36/bin/activate py36
+
+python ${SCRIPT} --locusprefix ${LOCUSPREFIX} \
+                 --studies ${STUDYNAMES} \
+                 --samples ${SAMPLES} \
+                 --outdir ${OUTDIR} \
+                 --metafile ${METAFILE} \
+                 --lddir ${LDBASEDIR}

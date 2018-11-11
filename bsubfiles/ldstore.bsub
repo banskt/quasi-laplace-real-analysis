@@ -1,0 +1,29 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi-short
+#BSUB -W 2:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -R scratch
+#BSUB -n 1
+
+NCORE=1
+STUDY=_GSTUDY_
+USELOCI=_USELOCI
+LOCIDIR=_LOCIDIR
+LDSTORE=_LDSTORE
+OUTDIR=_OUTDIR_
+
+CWD=`pwd`
+if [ ! -d ${OUTDIR} ]; then mkdir -p ${OUTDIR}; fi
+cd ${OUTDIR}
+
+while read LOCUSPREFIX; do
+    ${LDSTORE} --bgen ${LOCIDIR}/${LOCUSPREFIX}.bgen --bcor ${LOCUSPREFIX}.bcor --n-threads ${NCORE}
+    ${LDSTORE} --bcor ${LOCUSPREFIX}.bcor_${NCORE} --meta ${LOCUSPREFIX}.meta --n-threads ${NCORE}
+    ${LDSTORE} --bcor ${LOCUSPREFIX}.bcor_${NCORE} --matrix tmp.ld
+    sed 's/\ \+/\ /g;s/^\ \+//g' tmp.ld > ${LOCUSPREFIX}.LD
+    rm -rf tmp.ld
+done < ${USELOCI}
+
+cd ${CWD}
