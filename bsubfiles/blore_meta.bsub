@@ -1,0 +1,32 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi
+#BSUB -W 48:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -n 4
+#BSUB -R span[hosts=1]
+#BSUB -R scratch
+#BSUB -a openmp 
+
+BLORE=_B_LORE_
+NZ=_NCAUSAL
+USELOCI=_USELOCI
+OUTDIR=_OUT_DIR
+STUDYNAMES=_STUDYN_
+BLORE_SUMMARY_DIR=_BL_SUM_
+
+
+COHORT_PREFIXES=""
+for STUDY in ${STUDYNAMES}; do
+    COHORT_PREFIXES+="${BLORE_SUMMARY_DIR}/${STUDY} "
+done
+OUTDIR="${OUTDIR}/z{$NZ}_pi0.01_sig0.01"
+
+if [ ! -d ${OUTDIR} ]; then
+    mkdir -p ${OUTDIR}
+fi
+
+source $HOME/miniconda3/envs/py36/bin/activate py36
+
+$BLORE --meta --input ${USELOCI} --statdir ${COHORT_PREFIXES} --out ${OUTDIR} --zmax ${NZ} --params 0.01 0 0.01 0.01 --prefix='blore_meta' 

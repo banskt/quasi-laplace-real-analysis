@@ -4,10 +4,11 @@ source PATHS
 source CONFIG
 
 RANDSTRING=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1`
-LD_JOBSUBDIR="${JOBSUBDIR}/ldjobs"
+LD_JOBSUBDIR="${JOBSUBDIR}/${CONFIGDIR}/ldjobs"
 
-THIS_CONFIGDIR="${BASEDIR}/selectloci/${CONFIGDIR}"
-LOCIDEFDIR="${THIS_CONFIGDIR}/locidef"
+THIS_CONFIGDIR="${BASEDIR}/${CONFIGDIR}"
+THIS_LOCIDIR="${THIS_CONFIGDIR}/selectloci"
+LOCIDEFDIR="${THIS_LOCIDIR}/locidef"
 LOCUSNAMES="${THIS_CONFIGDIR}/LOCUSNAMES"
 LDBASEDIR="${THIS_CONFIGDIR}/ldmap"
 LDMAPWGHTDIR="${LDBASEDIR}/weighted"
@@ -21,7 +22,7 @@ cd ${LD_JOBSUBDIR}
 
 CREATEBGEN_JOBNAME="create_bgen_${RANDSTRING}"
 for STUDY in ${STUDYNAMES[@]}; do
-    GENODIR=${THIS_CONFIGDIR}/${STUDY}
+    GENODIR="${THIS_LOCIDIR}/${STUDY}"
     JOBNAME="${CREATEBGEN_JOBNAME}_${STUDY}"
     sed "s|_JOBNAME|${JOBNAME}|g;
          s|_GENDIR_|${GENODIR}|g;
@@ -38,7 +39,7 @@ for STUDY in ${STUDYNAMES[@]}; do
     sed "s|_JOBNAME|${JOBNAME}|g;
          s|_GSTUDY_|${STUDY}|g;
          s|_USELOCI|${LOCUSNAMES}|g;
-         s|_LOCIDIR|${THIS_CONFIGDIR}/${STUDY}|g;
+         s|_LOCIDIR|${THIS_LOCIDIR}/${STUDY}|g;
          s|_LDSTORE|${LDSTORE}|g;
          s|_OUTDIR_|${OUTDIR}|g;
          " ${MASTER_BSUBDIR}/ldstore.bsub > ${JOBNAME}.bsub

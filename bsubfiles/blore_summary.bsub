@@ -1,0 +1,29 @@
+#!/bin/sh
+#BSUB -J _JOBNAME
+#BSUB -q mpi
+#BSUB -W 48:00
+#BSUB -o _JOBNAME.out
+#BSUB -e _JOBNAME.err
+#BSUB -n 4
+#BSUB -R span[hosts=1]
+#BSUB -R scratch
+#BSUB -a openmp 
+
+BLORE=_B_LORE_
+GENODIR=_GEN_DIR
+OUTDIR=_OUT_DIR
+SAMPLEFILE=_SAM_FL_
+USELOCI=_USELOCI
+
+if [ ! -d ${OUTDIR} ]; then
+    mkdir -p ${OUTDIR}
+fi
+
+source $HOME/miniconda3/envs/py36/bin/activate py36
+
+GENOFILES=""
+while read LOCUSPREFIX; do
+    GENOFILES+="${GENODIR}/${LOCUSPREFIX}.gen "
+done < ${USELOCI}
+
+$BLORE --summary --gen ${GENOFILES} --sample ${SAMPLEFILE} --out ${OUTDIR} --pca 10 --reg 0.001 --regoptim

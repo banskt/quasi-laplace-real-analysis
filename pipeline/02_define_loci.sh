@@ -5,8 +5,8 @@ source CONFIG
 
 RANDSTRING=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1`
 METARESDIR="${BASEDIR}/metaanalysis/snptest/meta"
-THIS_JOBSUBDIR="${JOBSUBDIR}/selectloci"
-THIS_CONFIGDIR="${BASEDIR}/selectloci/${CONFIGDIR}"
+THIS_JOBSUBDIR="${JOBSUBDIR}/${CONFIGDIR}/selectloci/"
+THIS_CONFIGDIR="${BASEDIR}/${CONFIGDIR}/selectloci"
 
 if [ ! -d ${THIS_JOBSUBDIR} ]; then mkdir -p ${THIS_JOBSUBDIR}; fi
 cd ${THIS_JOBSUBDIR}
